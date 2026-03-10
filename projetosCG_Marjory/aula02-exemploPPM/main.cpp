@@ -59,6 +59,20 @@ void exerc8(){
 	destruir(&imgS);
 }
 
+void exerc9(){
+	PPM imgE;
+	PGM imgS;
+
+	ler(&imgE, "spider.ppm");
+	criarPGM(&imgS, imgE.larg, imgE.alt, 0);
+
+	convertPPMtoPGM(&imgE, &imgS);
+
+	gravarPGM(&imgS, "saida-exerc9.pgm");
+	destruir(&imgE);
+	destruirPGM(&imgS);
+}
+
 void exerc10(){
 	PPM imgE, imgS;
 
@@ -82,6 +96,34 @@ void exerc11(){
 
 	gravar(&img, "numeros-exerc11.ppm");
 	
+	destruir(&img);
+}
+
+void exerc13(){
+	PPM imgE, imgS;
+
+	ler(&imgE, "spider.ppm");
+	criar(&imgS, imgE.larg, imgE.alt, RGB(255, 255, 255));
+
+	inverterRGB(&imgE, &imgS);
+
+	gravar(&imgS, "saida-exerc13.ppm");
+	destruir(&imgE);
+	destruir(&imgS);
+}
+
+void exerc15(){
+	PPM img;
+	int x0 = 200, y0 = 180, x1 = 180, y1 = 160;
+
+	criar(&img, 500, 500, RGB(255, 255, 0));
+
+	RGB corL = RGB(0, 0, 255);
+
+    DDALine(&img, 0, 0, img.larg - 1, img.alt - 1, corL);
+	DDALine(&img, 0, img.alt - 1, img.larg - 1, 0, corL);
+
+	gravar(&img, "saida-exerc15.ppm");
 	destruir(&img);
 }
 
@@ -122,15 +164,16 @@ int main(void)
 	destruir(&img3);
 	*/
 
-	//exerc3();
-	//exerc4();
+	// exerc3();
+	// exerc4();
 	// exerc6();
 	// exerc7();
 	// exerc8();
-	
-	exerc10();
-	exerc11();
-	
+	// exerc9();
+	// exerc10();
+	// exerc11();
+	// exerc13();
+	exerc15();
 	// cout << "Pressione uma tecla para encerrar o programa.\n";
 	// getchar();
 	return EXIT_SUCCESS; 

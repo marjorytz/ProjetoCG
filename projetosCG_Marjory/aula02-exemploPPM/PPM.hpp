@@ -5,9 +5,11 @@
 #include <fstream>
 #include <sstream>
 #include <ctime>
+#include <bits/stdc++.h>
 
 using namespace std;
 
+// Estrutura PPM
 struct PPM
 {
     string tipo;
@@ -16,6 +18,24 @@ struct PPM
     int vmax;
     unsigned char *pixels; // unsigned char -> 0 a 255
     PPM()                  // construtor -> inicializar variaveis
+    {
+        pixels = nullptr;
+        larg = 0;
+        alt = 0;
+        vmax = 255;
+        tipo = "";
+    }
+};
+
+// Estrutura PGM
+struct PGM
+{
+    string tipo;
+    int larg;
+    int alt;
+    int vmax;
+    unsigned char *pixels; // unsigned char -> 0 a 255
+    PGM()                  // construtor -> inicializar variaveis
     {
         pixels = nullptr;
         larg = 0;
@@ -234,6 +254,66 @@ bool ler(PPM *ppm, string caminho)
     return true;
 }
 
+void criarPGM(PGM *pgm, int largura, int altura, unsigned char corFundo)
+{
+    if (pgm->pixels)
+        delete pgm->pixels;
+
+    int tamanho = largura * altura;
+
+    pgm->tipo = "P2";
+    pgm->larg = largura;
+    pgm->alt = altura;
+    pgm->vmax = 255;
+    pgm->pixels = new unsigned char[tamanho];
+
+    // definir a cor informada (preto/cinza/branco) para todos os pixels
+    for (int i = 0; i < tamanho; i++)
+        pgm->pixels[i] = corFundo;
+}
+
+bool gravarPGM(PGM *pgm, string caminho)
+{
+    if (!pgm->pixels)
+        return false;
+
+    ofstream arq;
+
+    arq.open(caminho);
+    if (!arq.is_open())
+    {
+        cout << "PGM: endereco do arquivo invalido\n";
+        return false;
+    }
+
+    arq << pgm->tipo << endl;
+
+    arq << pgm->larg << " " << pgm->alt << endl;
+
+    arq << 255 << endl; // valor máximo de cor fixo em 255
+
+    int tam = pgm->larg * pgm->alt;
+    for (int i = 0; i < tam; i++)
+    {
+        arq << (int)pgm->pixels[i] << endl;
+        //arq.flush();
+    }
+
+    arq.close();
+    return true;
+}
+
+void destruirPGM(PGM *pgm)
+{
+    if (pgm->pixels)
+        delete pgm->pixels;
+    pgm->pixels = nullptr;
+    pgm->larg = 0;
+    pgm->alt = 0;
+    pgm->tipo = "";
+    pgm->vmax = 255;
+}
+
 RGB getPixel(PPM *ppm, int x, int y)
 {
     RGB rgb;
@@ -337,6 +417,28 @@ void setRecorteRGB(PPM *ppmE, PPM *ppmS, int x0, int y0, int x1, int y1)
     }
 }
 
+// QUESTÃO 9
+// Conversão de PPM para PGM
+void convertPPMtoPGM(PPM *ppm, PGM *pgm)
+{
+    if (!ppm->pixels)
+        return;
+
+    unsigned char cinza = 0;
+
+    for (int x = 0; x < ppm->larg; x++)
+    {
+        for (int y = 0; y < ppm->alt; y++)
+        {
+            RGB c = getPixel(ppm, x, y);
+
+            cinza = 0.299*c.r + 0.587*c.g + 0.114*c.b;
+
+            pgm->pixels[y * pgm->larg + x] = cinza;
+        }
+    }
+}
+
 // QUESTÃO 10
 // Método para inverter a imagem horizontalmente (flip)
 void setFlipHorizontal(PPM *ppm, PPM *ppmS)
@@ -404,6 +506,70 @@ void setBordaEspessuraRGB(PPM *ppm, int x0, int y0, int x1, int y1, int espessur
             if (coordValida(ppm, x, y))
                 setPixel(ppm, x, y, cor);
         }
+    }
+}
+
+// QUESTÃO 13
+// Inverter as cores RGB de uma imagem PPM
+void inverterRGB(PPM *ppmE, PPM *ppmS) 
+{
+    if (!ppmE->pixels)
+        return;
+
+    for (int x = 0; x < ppmE->larg; x++)
+    {
+        for (int y = 0; y < ppmE->alt; y++)
+        {
+            RGB c = getPixel(ppmE, x, y);
+
+            setPixel(ppmS, x, y, RGB(255 - c.r, 255 - c.g, 255 - c.b));
+        }
+    }
+}
+
+// QUESTÃO 15
+// Algoritmo DDALine
+// function for rounding off the pixels
+int round(float n)
+{
+    if (n - (int)n < 0.5)
+        return (int)n;
+    return (int)(n + 1);
+}
+
+// Function for line generation
+void DDALine(PPM *img, int x0, int y0, int x1, int y1, RGB corL)
+{
+
+    // Calculate dx and dy
+    int dx = x1 - x0;
+    int dy = y1 - y0;
+
+    int step;
+
+    // If dx > dy we will take step as dx
+    // else we will take step as dy to draw the complete
+    // line
+    if (abs(dx) > abs(dy))
+        step = abs(dx);
+    else
+        step = abs(dy);
+
+    // Calculate x-increment and y-increment for each step
+    float x_incr = (float)dx / step;
+    float y_incr = (float)dy / step;
+
+    // Take the initial points as x and y
+    float x = x0;
+    float y = y0;
+
+    for (int i = 0; i < step; i++) {
+        setPixel(img, x, y, corL);
+        // putpixel(round(x), round(y), WHITE);
+        // cout << round(x) << " " << round(y) << "\n";
+        x += x_incr;
+        y += y_incr;
+        // delay(10);
     }
 }
 
