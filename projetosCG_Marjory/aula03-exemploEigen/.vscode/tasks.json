@@ -12,9 +12,9 @@
                 //"--std=c++11",
                 //"--std=c++2a",
                 "--std=c++17",
-                "${workspaceFolder}\\*.cpp",
+                "${file}",
                 "-o",
-                "${workspaceFolder}\\main.exe",
+                "${fileDirname}\\${fileBasenameNoExtension}.exe",
                 "-I${workspaceFolder}\\..\\include"
             ],
             "problemMatcher": [
