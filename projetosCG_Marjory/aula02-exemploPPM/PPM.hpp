@@ -527,6 +527,33 @@ void inverterRGB(PPM *ppmE, PPM *ppmS)
     }
 }
 
+// QUESTÃO 14
+// Reduzir a quantidade de cores da imagem PPM (Quantização Q=4)
+void quantizarCores(PPM *ppmE, PPM *ppmS)
+{
+    // Verifica se os ponteiros são válidos
+    if (!ppmE->pixels || !ppmS->pixels)
+        return;
+
+    for (int y = 0; y < ppmE->alt; y++)
+    {
+        for (int x = 0; x < ppmE->larg; x++)
+        {
+            // Pega a cor original do pixel
+            RGB c = getPixel(ppmE, x, y);
+
+            // Calcula o degrau mais próximo {0, 85, 170, 255} para cada canal
+            // Somar a metade do intervalo (42) antes de dividir por 85 garante o arredondamento correto
+            unsigned char novoR = ((c.r + 42) / 85) * 85;
+            unsigned char novoG = ((c.g + 42) / 85) * 85;
+            unsigned char novoB = ((c.b + 42) / 85) * 85;
+
+            // Salva o novo pixel com as cores reduzidas
+            setPixel(ppmS, x, y, RGB(novoR, novoG, novoB));
+        }
+    }
+}
+
 // QUESTÃO 15
 // Algoritmo DDALine
 // function for rounding off the pixels

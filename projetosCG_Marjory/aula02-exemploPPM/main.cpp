@@ -1,9 +1,12 @@
 #include <iostream>
+#include <vector>
+
 #include "PPM.hpp"
 
 using namespace std;
 
-void exerc3(){
+void exerc3()
+{
 	PPM img;
 
 	criar(&img, 300, 300, RGB(255, 255, 0));
@@ -11,7 +14,8 @@ void exerc3(){
 	destruir(&img);
 }
 
-void exerc4(){
+void exerc4()
+{
 	PPM img;
 
 	criar(&img, 300, 300, RGB(255, 255, 0));
@@ -20,7 +24,8 @@ void exerc4(){
 	destruir(&img);
 }
 
-void exerc6(){
+void exerc6()
+{
 	PPM img;
 
 	criar(&img, 300, 300, RGB(255, 255, 0));
@@ -30,21 +35,22 @@ void exerc6(){
 
 	gravar(&img, "saida-exerc6.ppm");
 	destruir(&img);
-	
 }
 
-void exerc7(){
+void exerc7()
+{
 	PPM img;
 
 	criar(&img, 500, 500, RGB(0, 0, 0));
 
 	corAleatoria(&img);
-	
+
 	gravar(&img, "saida-exerc7.ppm");
 	destruir(&img);
 }
 
-void exerc8(){
+void exerc8()
+{
 	PPM imgE, imgS;
 
 	ler(&imgE, "numeros.ppm");
@@ -59,7 +65,8 @@ void exerc8(){
 	destruir(&imgS);
 }
 
-void exerc9(){
+void exerc9()
+{
 	PPM imgE;
 	PGM imgS;
 
@@ -73,7 +80,8 @@ void exerc9(){
 	destruirPGM(&imgS);
 }
 
-void exerc10(){
+void exerc10()
+{
 	PPM imgE, imgS;
 
 	ler(&imgE, "numeros.ppm");
@@ -86,7 +94,8 @@ void exerc10(){
 	destruir(&imgS);
 }
 
-void exerc11(){
+void exerc11()
+{
 	PPM img;
 
 	ler(&img, "numeros-exerc11.ppm");
@@ -95,11 +104,92 @@ void exerc11(){
 	setBordaEspessuraRGB(&img, x0, y0, x1, y1, 10, RGB(255, 0, 0));
 
 	gravar(&img, "numeros-exerc11.ppm");
-	
+
 	destruir(&img);
 }
 
-void exerc13(){
+// QUESTÃO 12: Mosaico de Imagens PPM
+void exerc12()
+{
+	cout << "\n--- EXERCICIO 12: MOSAICO DE IMAGENS ---" << endl;
+
+	// Tenta abrir o arquivo de texto
+	ifstream arquivo("imagens.txt");
+	if (!arquivo.is_open())
+	{
+		cout << "Erro: Nao foi possivel abrir o arquivo 'imagens.txt'." << endl;
+		cout << "Certifique-se de que ele existe na mesma pasta do programa." << endl;
+		return;
+	}
+
+	// Lê todos os nomes de imagens e guarda no vetor
+	vector<string> listaImagens;
+	string nome;
+	while (arquivo >> nome)
+	{
+		listaImagens.push_back(nome);
+	}
+	arquivo.close();
+
+	int N = listaImagens.size();
+	if (N == 0)
+	{
+		cout << "O arquivo 'imagens.txt' esta vazio." << endl;
+		return;
+	}
+
+	// Lê a primeira imagem apenas para descobrir a largura (L) e altura (A)
+	PPM imgTeste;
+	if (!ler(&imgTeste, listaImagens[0]))
+	{
+		cout << "Erro ao carregar a primeira imagem: " << listaImagens[0] << endl;
+		return;
+	}
+
+	int L = imgTeste.larg;
+	int A = imgTeste.alt;
+	destruir(&imgTeste);
+
+	// Cria a imagem de saída gigante
+	PPM imgS;
+	criar(&imgS, L * N, A, RGB(0, 0, 0));
+
+	// Percorre a lista colando cada imagem no mosaico
+	for (int i = 0; i < N; i++)
+	{
+		PPM imgAtual;
+		if (ler(&imgAtual, listaImagens[i]))
+		{
+			int offsetX = i * L; // Deslocamento para colocar a imagem lado a lado
+
+			// Copia os pixels da imagem atual para o quadro correto na imagem de saída
+			for (int y = 0; y < A; y++)
+			{
+				for (int x = 0; x < L; x++)
+				{
+					RGB corPixel = getPixel(&imgAtual, x, y);
+					setPixel(&imgS, x + offsetX, y, corPixel);
+				}
+			}
+			destruir(&imgAtual); // Limpa a imagem atual para não lotar a memória RAM
+		}
+		else
+		{
+			cout << "Aviso: Pulando imagem com erro -> " << listaImagens[i] << endl;
+		}
+	}
+
+	// Grava o resultado final
+	if (gravar(&imgS, "saida-exerc12.ppm"))
+	{
+		cout << "Mosaico com " << N << " imagens gerado com sucesso! Salvo como 'saida-exerc12.ppm'." << endl;
+	}
+
+	destruir(&imgS);
+}
+
+void exerc13()
+{
 	PPM imgE, imgS;
 
 	ler(&imgE, "spider.ppm");
@@ -112,7 +202,41 @@ void exerc13(){
 	destruir(&imgS);
 }
 
-void exerc15(){
+void exerc14()
+{
+	PPM imgE, imgS;
+	string imgNome;
+
+	cout << "\n--- EXERCICIO 14: QUANTIZACAO DE CORES ---" << endl;
+	cout << "Digite o nome da imagem PPM de entrada (ex: spider.ppm): ";
+	cin >> imgNome;
+
+	// Lê a imagem original
+	if (!ler(&imgE, imgNome))
+	{
+		cout << "Falha ao carregar a imagem!" << endl;
+		return;
+	}
+
+	// Cria a imagem de saída com o mesmo tamanho
+	criar(&imgS, imgE.larg, imgE.alt, RGB(0, 0, 0));
+
+	// Chama a função para aplicar o efeito
+	quantizarCores(&imgE, &imgS);
+
+	// Salva no disco
+	if (gravar(&imgS, "saida-exerc14.ppm"))
+	{
+		cout << "Sucesso! Imagem quantizada salva como 'saida-exerc14.ppm'." << endl;
+	}
+
+	// Limpa a memória
+	destruir(&imgE);
+	destruir(&imgS);
+}
+
+void exerc15()
+{
 	PPM img;
 	int x0 = 200, y0 = 180, x1 = 180, y1 = 160;
 
@@ -120,7 +244,7 @@ void exerc15(){
 
 	RGB corL = RGB(0, 0, 255);
 
-    DDALine(&img, 0, 0, img.larg - 1, img.alt - 1, corL);
+	DDALine(&img, 0, 0, img.larg - 1, img.alt - 1, corL);
 	DDALine(&img, 0, img.alt - 1, img.larg - 1, 0, corL);
 
 	gravar(&img, "saida-exerc15.ppm");
@@ -137,7 +261,7 @@ int main(void)
 	gravar(&img1, "exemplo1.ppm");
 	destruir(&img1);
 
-	//#Exemplo2#: imprimindo os atributos da imagem 
+	//#Exemplo2#: imprimindo os atributos da imagem
 	PPM img2;
 	cout << "#Exemplo 2#\n";
 	imprimir(&img2);
@@ -147,7 +271,7 @@ int main(void)
 	destruir(&img2);
 	imprimir(&img2);
 
-	//#Exemplo3#: ler imagem, getPixel, setPixel 
+	//#Exemplo3#: ler imagem, getPixel, setPixel
 	PPM img3;
 	RGB corP;
 	cout << "\n\n#Exemplo 3#\n";
@@ -172,9 +296,11 @@ int main(void)
 	// exerc9();
 	// exerc10();
 	// exerc11();
+	// exerc12();
 	// exerc13();
-	exerc15();
+	// exerc14();
+	// exerc15();
 	// cout << "Pressione uma tecla para encerrar o programa.\n";
 	// getchar();
-	return EXIT_SUCCESS; 
+	return EXIT_SUCCESS;
 }
