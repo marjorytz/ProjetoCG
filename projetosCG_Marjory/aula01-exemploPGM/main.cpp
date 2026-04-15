@@ -127,6 +127,50 @@ void exerc12()
 }
 
 // Combinar duas imagens PGM
+void exerc13()
+{
+	PGM img1, img2, imgS;
+	string imgNome1, imgNome2;
+
+	cout << "\n--- EXERCICIO 13: COMBINAR IMAGENS ---" << endl;
+	cout << "Digite o nome da 1a imagem (ex: imagem1.pgm): ";
+	cin >> imgNome1;
+	cout << "Digite o nome da 2a imagem (ex: imagem2.pgm): ";
+	cin >> imgNome2;
+
+	// Lê as duas imagens simultaneamente e verifica se existem
+	if (!ler(&img1, imgNome1) || !ler(&img2, imgNome2))
+	{
+		cout << "Falha ao carregar uma ou ambas as imagens!" << endl;
+		return;
+	}
+
+	// Cria a imagem de saída com as dimensões da imagem 1
+	criar(&imgS, img1.larg, img1.alt, 0);
+
+	int menu = 0;
+	cout << "\nEscolha a combinacao desejada:" << endl;
+	cout << "1. Media: (C1+C2)/2" << endl;
+	cout << "2. Maior: max(C1,C2)" << endl;
+	cout << "3. Menor: min(C1,C2)" << endl;
+	cout << "Opcao: ";
+	cin >> menu;
+
+	if (menu >= 1 && menu <= 3)
+	{
+		combinarPGM(&img1, &img2, &imgS, menu);
+		gravar(&imgS, "saida-exerc13.pgm");
+		cout << "Sucesso! Imagem combinada salva como 'saida-exerc13.pgm'." << endl;
+	}
+	else
+	{
+		cout << "Opcao invalida! Operacao cancelada." << endl;
+	}
+
+	destruir(&img1);
+	destruir(&img2);
+	destruir(&imgS);
+}
 
 // Desenhar uma borda em uma região de uma imagem PGM
 void exerc14()
@@ -193,15 +237,16 @@ int main(void)
 	*/
 
 	// Chamada dos exercícios
-	exerc5();
-	exerc7();
-	exerc8();
-	exerc9();
-	exerc10();
-	exerc11();
-	exerc12();
-	exerc14();
-	exerc15();
+	// exerc5();
+	// exerc7();
+	// exerc8();
+	// exerc9();
+	// exerc10();
+	// exerc11();
+	// exerc12();
+	// exerc13();
+	// exerc14();
+	// exerc15();
 
 	// cout << "Pressione uma tecla para encerrar o programa.\n";
 	// getchar();

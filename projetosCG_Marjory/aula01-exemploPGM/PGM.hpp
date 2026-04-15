@@ -361,7 +361,41 @@ void setBorda(PGM *pgm, int espessura, unsigned char cor)
 
 // QUESTÃO 13
 // Combinar duas imagens PGM
-// Não consegui fazer
+void combinarPGM(PGM *img1, PGM *img2, PGM *imgS, int tipoCombinacao)
+{
+    // Verifica se os ponteiros são válidos
+    if (!img1->pixels || !img2->pixels || !imgS->pixels)
+        return;
+
+    // Varre todos os pixels das imagens
+    for (int y = 0; y < img1->alt; y++)
+    {
+        for (int x = 0; x < img1->larg; x++)
+        {
+            // Pega o valor da cor em ambas as imagens na mesma coordenada
+            unsigned char c1 = getPixel(img1, x, y);
+            unsigned char c2 = getPixel(img2, x, y);
+            unsigned char corFinal = 0;
+
+            // Aplica a regra matemática de acordo com a opção escolhida no menu
+            if (tipoCombinacao == 1) // Média
+            {
+                corFinal = (c1 + c2) / 2;
+            }
+            else if (tipoCombinacao == 2) // Maior (max)
+            {
+                corFinal = (c1 > c2) ? c1 : c2;
+            }
+            else if (tipoCombinacao == 3) // Menor (min)
+            {
+                corFinal = (c1 < c2) ? c1 : c2;
+            }
+
+            // Grava a cor calculada na imagem de saída
+            setPixel(imgS, x, y, corFinal);
+        }
+    }
+}
 
 // QUESTÃO 14
 // Desenhar uma borda em uma região de uma imagem PGM
