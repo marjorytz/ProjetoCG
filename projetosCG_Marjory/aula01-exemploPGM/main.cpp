@@ -130,20 +130,9 @@ void exerc12()
 void exerc13()
 {
 	PGM img1, img2, imgS;
-	string imgNome1, imgNome2;
 
-	cout << "\n--- EXERCICIO 13: COMBINAR IMAGENS ---" << endl;
-	cout << "Digite o nome da 1a imagem (ex: imagem1.pgm): ";
-	cin >> imgNome1;
-	cout << "Digite o nome da 2a imagem (ex: imagem2.pgm): ";
-	cin >> imgNome2;
-
-	// Lê as duas imagens simultaneamente e verifica se existem
-	if (!ler(&img1, imgNome1) || !ler(&img2, imgNome2))
-	{
-		cout << "Falha ao carregar uma ou ambas as imagens!" << endl;
-		return;
-	}
+	ler(&img1, "numeros.pgm");
+	ler(&img2, "numeros-inv.pgm");
 
 	// Cria a imagem de saída com as dimensões da imagem 1
 	criar(&imgS, img1.larg, img1.alt, 0);
@@ -201,6 +190,29 @@ void exerc15()
 	destruir(&imgE);
 }
 
+// Questão 7 da Lista de revisão
+void exercMediana()
+{
+	PGM imgE, imgS;
+
+	ler(&imgE, "entrada.pgm");
+
+	// Cria a imagem de saída com as mesmas dimensões
+	criar(&imgS, imgE.larg, imgE.alt, 0);
+
+	// Chama a função para tapar os buracos
+	preencherBuracoMediana(&imgE, &imgS);
+
+	// Salva no disco
+	if (gravar(&imgS, "saida-mediana.pgm"))
+	{
+		cout << "Sucesso! A imagem sem ruidos foi salva como 'saida-mediana.pgm'." << endl;
+	}
+
+	destruir(&imgE);
+	destruir(&imgS);
+}
+
 int main(void)
 {
 
@@ -247,6 +259,8 @@ int main(void)
 	// exerc13();
 	// exerc14();
 	// exerc15();
+
+	// exercMediana();
 
 	// cout << "Pressione uma tecla para encerrar o programa.\n";
 	// getchar();

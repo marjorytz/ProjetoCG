@@ -4,6 +4,8 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <algorithm>
+#include <vector>
 using namespace std;
 
 struct PGM
@@ -433,6 +435,82 @@ void convertTons(PGM *pgm, PGM *pgmS)
                 setPixel(pgmS, x, y, 255);
             else if (getPixel(pgm, x, y) <= 128)
                 setPixel(pgmS, x, y, 0);
+        }
+    }
+}
+
+// QUESTÃO 7 - Revisão
+// Função para remover buracos usando a Mediana
+void preencherBuracoMediana(PGM *imgE, PGM *imgS)
+{
+    // Verifica se as imagens foram carregadas corretamente
+    if (!imgE->pixels || !imgS->pixels) return;
+
+    for (int y = 0; y < imgE->alt; y++)
+    {
+        for (int x = 0; x < imgE->larg; x++)
+        {
+            unsigned char corAtual = getPixel(imgE, x, y);
+
+            // Se o pixel NÃO for um buraco, apenas copia a cor original e vai para o próximo
+            if (corAtual != 0)
+            {
+                setPixel(imgS, x, y, corAtual);
+                continue;
+            }
+            
+            vector<unsigned char> vizinhos;
+
+            // Percorre a grade 3x3 ao redor do pixel P(x,y)
+            for (int dy = -1; dy <= 1; dy++)
+            {
+                for (int dx = -1; dx <= 1; dx++)
+                {
+                    // Ignora o próprio pixel central P(x,y)
+                    if (dx == 0 && dy == 0) continue;
+
+                    int nx = x + dx;
+                    int ny = y + dy;
+
+                    // Regra: Verifica se a coordenada é válida (dentro da imagem)
+                    if (coordValida(imgE, nx, ny))
+                    {
+                        unsigned char corVizinho = getPixel(imgE, nx, ny);
+                        
+                        // Regra: A intensidade da cor deve ser diferente de zero
+                        if (corVizinho != 0)
+                        {
+                            vizinhos.push_back(corVizinho);
+                        }
+                    }
+                }
+            }
+
+            // Regra: Cálculo da Mediana
+            if (!vizinhos.empty())
+            {
+                // Ordena os valores em ordem crescente
+                sort(vizinhos.begin(), vizinhos.end());
+                
+                int tam = vizinhos.size();
+                unsigned char mediana = 0;
+
+                if (tam % 2 != 0) {
+                    // Ímpar: Pega o elemento central exato
+                    mediana = vizinhos[tam / 2];
+                } else {
+                    // Par: Média aritmética dos dois elementos centrais
+                    mediana = (vizinhos[(tam / 2) - 1] + vizinhos[tam / 2]) / 2;
+                }
+
+                // Tapa o buraco na imagem de saída com a mediana calculada
+                setPixel(imgS, x, y, mediana);
+            }
+            else
+            {
+                // se TODOS os vizinhos ao redor também forem 0, continua 0
+                setPixel(imgS, x, y, 0);
+            }
         }
     }
 }

@@ -1,0 +1,2 @@
+numeros.ppm
+numeros-inv.ppm

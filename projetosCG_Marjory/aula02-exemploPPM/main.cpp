@@ -192,7 +192,7 @@ void exerc13()
 {
 	PPM imgE, imgS;
 
-	ler(&imgE, "spider.ppm");
+	ler(&imgE, "numeros.ppm");
 	criar(&imgS, imgE.larg, imgE.alt, RGB(255, 255, 255));
 
 	inverterRGB(&imgE, &imgS);
@@ -205,18 +205,8 @@ void exerc13()
 void exerc14()
 {
 	PPM imgE, imgS;
-	string imgNome;
 
-	cout << "\n--- EXERCICIO 14: QUANTIZACAO DE CORES ---" << endl;
-	cout << "Digite o nome da imagem PPM de entrada (ex: spider.ppm): ";
-	cin >> imgNome;
-
-	// Lê a imagem original
-	if (!ler(&imgE, imgNome))
-	{
-		cout << "Falha ao carregar a imagem!" << endl;
-		return;
-	}
+	ler(&imgE, "spider.ppm");
 
 	// Cria a imagem de saída com o mesmo tamanho
 	criar(&imgS, imgE.larg, imgE.alt, RGB(0, 0, 0));
@@ -300,6 +290,7 @@ int main(void)
 	// exerc13();
 	// exerc14();
 	// exerc15();
+
 	// cout << "Pressione uma tecla para encerrar o programa.\n";
 	// getchar();
 	return EXIT_SUCCESS;
